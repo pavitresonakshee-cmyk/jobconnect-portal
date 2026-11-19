@@ -1,0 +1,55 @@
+PROMPT TO GIVE AN AI CODING ASSISTANT
+
+I have an existing project named “JobConnect – Online Job Portal System”. I will provide you with the complete existing source-code ZIP. First inspect the existing project files and understand the current implementation before editing anything.
+
+IMPORTANT: Keep my existing Practical 1 exactly as it is in terms of its purpose and existing features. Practical 1 is:
+“Design, develop and deploy a web application to interact with NoSQL database from a Node application.”
+It is an online Job Portal built with HTML, CSS, JavaScript, Node.js, Express.js and MongoDB. It already supports user registration/login, seeker/employer/admin roles, job posting, job listing/search, job update/delete, job applications, resume upload, dashboards and MongoDB storage. Do not remove, replace, redesign destructively, or break any of these features.
+
+Now add a separate module to the SAME JobConnect application for Practical 2:
+“Design, develop and deploy a web application to demonstrate the server side validation using Node.JS.”
+
+TECHNOLOGY RESTRICTIONS:
+Use only HTML, CSS, JavaScript, Node.js, Express.js and MongoDB/Mongoose, consistent with the existing project. Do not introduce React, Angular, Vue, Python, PHP, MySQL, or an unnecessary framework. Reuse the existing package dependencies wherever possible. If you believe another dependency is essential, explain why before adding it.
+
+PRACTICAL 2 FUNCTIONAL REQUIREMENTS:
+1. Add a clearly visible “Validation Practical” navigation link to the existing JobConnect interface.
+2. Create a professional, responsive Job Application Form that visually matches the existing JobConnect design.
+3. Include these fields: Full Name, Email Address, Phone Number, Job Role, Experience (years), Skills (comma-separated), and Cover Letter.
+4. Submit the form to a new Express POST endpoint, for example POST /api/validation/applications.
+5. Perform the actual validation on the Node.js server. Do not rely only on HTML required attributes or browser-side JavaScript validation. Client-side validation may improve usability, but the server must independently validate every field.
+6. Validation rules:
+   - Full Name: required, trimmed, 2–60 characters.
+   - Email: required and valid email format; normalize to lowercase.
+   - Phone: required and exactly 10 digits.
+   - Job Role: required, maximum 80 characters.
+   - Experience: required numeric value from 0 to 50.
+   - Skills: at least one non-empty comma-separated skill; each skill maximum 40 characters.
+   - Cover Letter: required, trimmed, 20–1000 characters.
+7. If validation fails, return HTTP 422 with a clear general message and field-specific error messages. Display those errors next to the relevant fields in the form.
+8. If validation succeeds, save the data in a separate MongoDB collection (for example `validationsubmissions`) using a Mongoose model. Return HTTP 201 with a success message and the saved record ID.
+9. Display a success message in the UI only after the server confirms successful saving.
+10. Add a way to display or refresh recently saved valid submissions so the practical demonstration is easy. Do not display passwords or secret information.
+11. Ensure invalid submissions are never saved to MongoDB.
+12. Handle unexpected server/database errors safely and return appropriate JSON responses.
+
+QUALITY AND COMPATIBILITY REQUIREMENTS:
+- Preserve all existing Practical 1 routes, models, frontend pages and working behavior.
+- Keep the new Practical 2 code organized in separate model/route files where appropriate.
+- Use safe output escaping when displaying user-submitted values.
+- Ensure the UI is responsive and professional on desktop and mobile.
+- Do not hardcode database passwords, JWT secrets or other credentials.
+- Update README with setup instructions, how to run the app, how to demonstrate Practical 1, how to demonstrate Practical 2, validation rules, API endpoints and deployment notes.
+- Include a `.gitignore` that excludes `.env`, `node_modules/` and uploaded private files where appropriate.
+- Check all JavaScript files for syntax errors. Check package.json scripts and dependencies.
+- Do not claim that the application has been run against MongoDB or deployed unless you actually tested it in an environment with a working database and deployment credentials. Clearly list any manual setup that I must perform.
+
+EXPECTED DELIVERY:
+1. Return the complete updated project, not just code snippets.
+2. Keep the original JobConnect Practical 1 and add Practical 2 into it.
+3. Include all required source files and a clear README.
+4. Package the final project as one ZIP file that I can extract and open in VS Code on Windows.
+5. Give exact step-by-step commands for installing dependencies, configuring `.env`, starting MongoDB, running the app and testing both practicals.
+6. Explain which screenshots I should capture for the Practical 2 report: blank/invalid form with server errors, valid successful submission, and the saved document in MongoDB Compass.
+
+Before finishing, summarize which files you changed/added and confirm that the original Practical 1 features were retained. Do not fabricate test results.

@@ -1,0 +1,443 @@
+{
+  "info": {
+    "_postman_id": "c1e8a93b-5d42-4f1b-b271-9f20e4b85c10",
+    "name": "JobConnect - Practical 5 CRUD APIs",
+    "description": "Postman Collection for College Practical 5: CRUD API Development, Deployment and Postman Testing for JobConnect Job Portal.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "jobId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Authentication (Pre-requisite)",
+      "item": [
+        {
+          "name": "Register Employer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var data = pm.response.json();",
+                  "    pm.collectionVariables.set('token', data.token);",
+                  "    pm.test('Status code is 201 Created', function () {",
+                  "        pm.response.to.have.status(201);",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tech Employer\",\n  \"email\": \"employer@techcorp.com\",\n  \"password\": \"Employer@123\",\n  \"role\": \"employer\",\n  \"company\": \"ABC Technologies\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Registers a new employer account to obtain a JWT authentication token."
+          },
+          "response": []
+        },
+        {
+          "name": "Login Employer (Get Token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var data = pm.response.json();",
+                  "    pm.collectionVariables.set('token', data.token);",
+                  "    pm.test('Status code is 200 OK', function () {",
+                  "        pm.response.to.have.status(200);",
+                  "    });",
+                  "    pm.test('Token received', function () {",
+                  "        pm.expect(data.token).to.be.a('string');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"employer@techcorp.com\",\n  \"password\": \"Employer@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Logs in the employer account and automatically stores the JWT token in collection variable {{token}}."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Practical 5 CRUD Operations",
+      "item": [
+        {
+          "name": "1. CREATE - POST /api/jobs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var data = pm.response.json();",
+                  "if (data._id) {",
+                  "    pm.collectionVariables.set('jobId', data._id);",
+                  "}",
+                  "pm.test('Job has title and id', function () {",
+                  "    pm.expect(data.title).to.eql('Frontend Developer');",
+                  "    pm.expect(data._id).to.be.a('string');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Frontend Developer\",\n  \"company\": \"ABC Technologies\",\n  \"location\": \"Pune\",\n  \"description\": \"Looking for a frontend developer proficient in React.js and CSS\",\n  \"salary\": \"4-6 LPA\",\n  \"jobType\": \"Full Time\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs"]
+            },
+            "description": "Creates a new job vacancy in MongoDB. Requires Authorization header with Bearer token."
+          },
+          "response": []
+        },
+        {
+          "name": "2. READ ALL - GET /api/jobs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var data = pm.response.json();",
+                  "pm.test('Returns an array of jobs', function () {",
+                  "    pm.expect(Array.isArray(data)).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs"]
+            },
+            "description": "Retrieves all available job records from MongoDB in JSON format."
+          },
+          "response": []
+        },
+        {
+          "name": "3. READ BY ID - GET /api/jobs/:id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var data = pm.response.json();",
+                  "pm.test('Returned job matches requested ID', function () {",
+                  "    pm.expect(data._id).to.eql(pm.collectionVariables.get('jobId'));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs/{{jobId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs", "{{jobId}}"]
+            },
+            "description": "Retrieves a single job record from MongoDB by its ObjectId."
+          },
+          "response": []
+        },
+        {
+          "name": "4. UPDATE - PUT /api/jobs/:id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var data = pm.response.json();",
+                  "pm.test('Fields are updated successfully', function () {",
+                  "    pm.expect(data.title).to.eql('Senior Frontend Developer');",
+                  "    pm.expect(data.location).to.eql('Mumbai');",
+                  "    pm.expect(data.salary).to.eql('7-9 LPA');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Senior Frontend Developer\",\n  \"location\": \"Mumbai\",\n  \"salary\": \"7-9 LPA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs/{{jobId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs", "{{jobId}}"]
+            },
+            "description": "Updates an existing job's details. Only authorized creator or admin can update."
+          },
+          "response": []
+        },
+        {
+          "name": "5. DELETE - DELETE /api/jobs/:id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var data = pm.response.json();",
+                  "pm.test('Deletion message is returned', function () {",
+                  "    pm.expect(data.message).to.eql('Job deleted successfully');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs/{{jobId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs", "{{jobId}}"]
+            },
+            "description": "Deletes the specified job record from MongoDB."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Error & Validation Edge Cases",
+      "item": [
+        {
+          "name": "GET Job with Invalid ID (400 Bad Request)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs/invalid-mongo-id-123",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs", "invalid-mongo-id-123"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Job with Non-existent ID (404 Not Found)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404 Not Found', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs/660000000000000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs", "660000000000000000000000"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Job without Token (401 Unauthorized)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 401 Unauthorized', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Frontend Developer\",\n  \"company\": \"ABC Technologies\",\n  \"location\": \"Pune\",\n  \"description\": \"Looking for a developer\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Job with Missing Required Fields (400 Bad Request)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"salary\": \"10 LPA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
